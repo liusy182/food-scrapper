@@ -17,13 +17,14 @@ function getNextPageLinks() {
 }
 
 function openrice(casper) {
-  casper.start('http://sg.openrice.com/en/singapore/restaurants?page=15')
+  casper.start('http://sg.openrice.com/en/singapore/restaurants')
     .then(scrapNextPage);
 
   function scrapNextPage() {
+    let currentUrl = this.getCurrentUrl();
     let links = this.evaluate(getChildPageLinks);
 
-    casper.start().each(links, function(self, link) {
+    casper.each(links, function(self, link) {
       self.thenOpen(link, function() {
         let info = [];
 
@@ -41,7 +42,7 @@ function openrice(casper) {
 
         let style = this.fetchText('.sr2-overview-container .text.comma-tags')
           .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
-        info.push('style');
+        info.push(style);
 
         let budget = this.fetchText('.sr2-overview-container .text[itemprop=priceRange]')
           .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
@@ -67,17 +68,25 @@ function openrice(casper) {
         this.echo('website: ' + website);
         this.echo('=================================');
 
-        fs.write('result.txt', info.join(','), 'a');
-        fs.write('urls.txt', '\n', 'a');
+        fs.write('openrice.csv', info.join(','), 'a');
+        fs.write('openrice.csv', '\n', 'a');
       });
     });
 
-    let nextPageLink = this.evaluate(getNextPageLinks);
-    if(nextPageLink.length > 0) {
-      this.echo('opening ' + nextPageLink[0]);
-      casper.open(nextPageLink[0]);
-      casper.then(scrapNextPage)
-    }
+    casper.then(function() {
+      this.echo('get back to url: ' + currentUrl);
+
+      casper.open(currentUrl).then(function() {
+        let nextPageLink = this.evaluate(getNextPageLinks);
+        if(nextPageLink.length > 0) {
+          this.echo('opening ' + nextPageLink[0]);
+          casper.open(nextPageLink[0]);
+          casper.then(scrapNextPage)
+        }
+      });
+    });
+
+    
   }
 }
 
