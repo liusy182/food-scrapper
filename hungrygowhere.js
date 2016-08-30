@@ -1,51 +1,51 @@
-'use strict'
+'use strict';
 
 var fs = require('fs');
 
 let districts = [
-  'Raffles Place',
-  'Cecil',
-  'Marina',
-  'People\'s Park',
-  'Anson',
-  'Tanjong Pagar',
-  'Queenstown',
-  'Tiong Bahru',
-  'Telok Blangah',
-  'Harbourfront',
-  'Pasir Panjang',
-  'Hong Leong Garden',
-  'Clementi New Town',
-  'High Street',
-  'Beach Road (part)',
-  'Middle Road',
-  'Golden Mile',
-  'Little India',
-  'Orchard',
-  'Cairnhill',
-  'River Valley',
-  'Ardmore',
-  'Bukit Timah',
-  'Holland Road',
-  'Tanglin',
-  'Watten Estate',
-  'Novena',
-  'Thomson',
-  'Balestier',
-  'Toa Payoh',
-  'Serangoon',
-  'Macpherson',
-  'Braddell',
-  'Geylang',
-  'Eunos',
-  'Katong',
-  'Joo Chiat',
-  'Amber Road',
-  'Bedok',
-  'Upper East Coast',
-  'Eastwood',
-  'Kew Drive',
-  'Loyang',
+  // 'Raffles Place',
+  // 'Cecil',
+  // 'Marina',
+  // 'People\'s Park',
+  // 'Anson',
+  // 'Tanjong Pagar',
+  // 'Queenstown',
+  // 'Tiong Bahru',
+  // 'Telok Blangah',
+  // 'Harbourfront',
+  // 'Pasir Panjang',
+  // 'Hong Leong Garden',
+  // 'Clementi New Town',
+  // 'High Street',
+  // 'Beach Road (part)',
+  // 'Middle Road',
+  // 'Golden Mile',
+  // 'Little India',
+  // 'Orchard',
+  // 'Cairnhill',
+  // 'River Valley',
+  // 'Ardmore',
+  // 'Bukit Timah',
+  // 'Holland Road',
+  // 'Tanglin',
+  // 'Watten Estate',
+  // 'Novena',
+  // 'Thomson',
+  // 'Balestier',
+  // 'Toa Payoh',
+  // 'Serangoon',
+  // 'Macpherson',
+  // 'Braddell',
+  // 'Geylang',
+  // 'Eunos',
+  // 'Katong',
+  // 'Joo Chiat',
+  // 'Amber Road',
+  // 'Bedok',
+  // 'Upper East Coast',
+  // 'Eastwood',
+  // 'Kew Drive',
+  // 'Loyang',
   'Changi',
   'Tampines',
   'Pasir Ris',
@@ -102,18 +102,18 @@ function hungrygowhere(casper) {
   });
 
   function srollTillTheEnd() {
+    this.echo(this.getCurrentUrl().replace(url, '').replace(suffix, ''));
     let oldCount = this.evaluate(getItemCount);
     this.scrollToBottom();
     this.wait(3000, function() {
       let newCount = this.evaluate(getItemCount);
       if(oldCount !== newCount) {
-        this.echo('scroll');
         casper.then(srollTillTheEnd)
       } else {
         let info = this.evaluate(getStallInfoInCSVRow);
         this.echo('info: \n' + info.join('\n'));
-        fs.write('hungrygowhere.csv', info.join('\n'), 'a');
-        fs.write('hungrygowhere.csv', '\n', 'a');
+        fs.write('out/hungrygowhere.csv', info.join('\n'), 'a');
+        fs.write('out/hungrygowhere.csv', '\n', 'a');
       }
     });
   }

@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 var fs = require('fs');
 
@@ -68,8 +68,8 @@ function openrice(casper) {
         this.echo('website: ' + website);
         this.echo('=================================');
 
-        fs.write('openrice.csv', info.join(','), 'a');
-        fs.write('openrice.csv', '\n', 'a');
+        fs.write('out/openrice.csv', info.join(','), 'a');
+        fs.write('out/openrice.csv', '\n', 'a');
       });
     });
 
