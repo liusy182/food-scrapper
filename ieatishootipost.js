@@ -9,6 +9,11 @@ function getChildPageLinks() {
   });
 }
 
+function getFirstImg() {
+  var img = document.querySelector('.article-content-wrapper img');
+  return img? img.getAttribute('src') : '';
+}
+
 function ieatishootipost(casper) {
   var index = 1;
   casper.start('http://ieatishootipost.sg/category/eat/page/' + index++)
@@ -23,50 +28,45 @@ function ieatishootipost(casper) {
     casper.each(links, function(self, link) {
       self.thenOpen(link, function() {
         this.echo('scrap child: ' + this.getCurrentUrl());
-        // let info = [];
 
-        // let name = this.fetchText('.restaurant-title-lang1')
-        //   .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
-        // info.push(name);
+        let info = [];
 
-        // let address = this.fetchText('.address-info-section .text')
-        //   .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
-        // info.push(address);
+        let name = this.fetchText('.restaurant-name')
+          .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
+        info.push(name);
 
-        // let phone = this.fetchText('.sr2-overview-container.phone-section a')
-        //   .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
-        // info.push(phone);
+        let address = this.fetchText('.address')
+          .replace('Address', '').replace('View Map', '')
+          .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
+        info.push(address);
 
-        // let style = this.fetchText('.sr2-overview-container .text.comma-tags')
-        //   .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
-        // info.push(style);
+        let openingHour = this.fetchText('.opening-hours')
+          .replace('Opening hours:', '')
+          .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
+        info.push(openingHour);
 
-        // let budget = this.fetchText('.sr2-overview-container .text[itemprop=priceRange]')
-        //   .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
-        // info.push(budget);
+        let articleTitle = this.fetchText('.article-title')
+          .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
+        info.push(articleTitle);
 
-        // let openingHour = this.fetchText({
-        //   type: 'xpath',
-        //   path: '//*[@class="or-sprite condition_time_40x40"]/../..'
-        // }).replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
-        // info.push(openingHour);
+        let articleDate = this.fetchText('.article-date')
+          .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
+        info.push(articleDate);
 
-        // let website = this.fetchText('.restaurant-url .text')
-        //   .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
-        // info.push(website);
+        let firstImg = this.evaluate(getFirstImg);
+        info.push(firstImg);
 
-        // this.echo('=================================');
-        // this.echo('name: ' + name);
-        // this.echo('address: ' + address);
-        // this.echo('phone: ' + phone);
-        // this.echo('style: ' + style);
-        // this.echo('budget: ' + budget);
-        // this.echo('openingHour: ' + openingHour);
-        // this.echo('website: ' + website);
-        // this.echo('=================================');
+        this.echo('=================================');
+        this.echo('name: ' + name);
+        this.echo('address: ' + address);
+        this.echo('openingHour: ' + openingHour);
+        this.echo('articleTitle: ' + articleTitle);
+        this.echo('articleDate: ' + articleDate);
+        this.echo('firstImg: ' + firstImg);
+        this.echo('=================================');
 
-        // fs.write('out/ieatishootipost.csv', info.join(','), 'a');
-        // fs.write('out/ieatishootipost.csv', '\n', 'a');
+        fs.write('out/ieatishootipost.csv', info.join(','), 'a');
+        fs.write('out/ieatishootipost.csv', '\n', 'a');
       });
     });
 
