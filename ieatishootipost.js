@@ -29,44 +29,52 @@ function ieatishootipost(casper) {
       self.thenOpen(link, function() {
         this.echo('scrap child: ' + this.getCurrentUrl());
 
-        let info = [];
-
         let name = this.fetchText('.restaurant-name')
-          .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
-        info.push(name);
+          .replace(/\t/g, ' ').replace(/\n/g, ' ').replace(/ +/g, ' ').trim();
 
         let address = this.fetchText('.address')
           .replace('Address', '').replace('View Map', '')
-          .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
-        info.push(address);
+          .replace(/\t/g, ' ').replace(/\n/g, ' ').replace(/ +/g, ' ').trim();
 
         let openingHour = this.fetchText('.opening-hours')
           .replace('Opening hours:', '')
-          .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
-        info.push(openingHour);
+          .replace(/\t/g, ' ').replace(/\n/g, ' ').replace(/ +/g, ' ').trim();
 
         let articleTitle = this.fetchText('.article-title')
-          .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
-        info.push(articleTitle);
+          .replace(/\t/g, ' ').replace(/\n/g, ' ').replace(/ +/g, ' ').trim();
 
         let articleDate = this.fetchText('.article-date')
-          .replace(/\n/g, ' ').replace(/,/g, ' ').replace(/ +/g, ' ').trim();
-        info.push(articleDate);
+          .replace(/\t/g, ' ').replace(/\n/g, ' ').replace(/ +/g, ' ').trim();
 
-        let firstImg = this.evaluate(getFirstImg);
-        info.push(firstImg);
+        let articleDescription = this.fetchText('.article-content p:first-of-type')
+          .replace(/\t/g, ' ').replace(/\n/g, ' ').replace(/ +/g, ' ').trim();
 
-        this.echo('=================================');
-        this.echo('name: ' + name);
-        this.echo('address: ' + address);
-        this.echo('openingHour: ' + openingHour);
-        this.echo('articleTitle: ' + articleTitle);
-        this.echo('articleDate: ' + articleDate);
-        this.echo('firstImg: ' + firstImg);
-        this.echo('=================================');
+        if(!articleDescription) {
+          articleDescription = this.fetchText('.article-content p:nth-of-type(2)')
+            .replace(/\t/g, ' ').replace(/\n/g, ' ').replace(/ +/g, ' ').trim();
+        }
 
-        fs.write('out/ieatishootipost.csv', info.join(','), 'a');
-        fs.write('out/ieatishootipost.csv', '\n', 'a');
+        let image = this.evaluate(getFirstImg);
+
+        let file = 'out/ieatishootipost.json';
+        let stream = fs.exists(file) ? fs.read(file, 'r') : '';
+        let jsonArray = stream? JSON.parse(stream) : [];
+
+        let newEntry = {
+          title: articleTitle,
+          description: articleDescription,
+          date: articleDate,
+          image: image,
+          name: name,
+          address: address,
+          openingHour: openingHour
+        }
+        this.echo('=============================');
+        this.echo(JSON.stringify(newEntry));
+        this.echo('=============================');
+
+        jsonArray.push(newEntry);
+        fs.write(file, JSON.stringify(jsonArray), 'w');
       });
     });
 

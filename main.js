@@ -10,9 +10,9 @@ var openrice = require('./openrice');
 var hungrygowhere = require('./hungrygowhere');
 var ieatishootipost = require('./ieatishootipost');
 
-//hungrygowhere(casper);
+hungrygowhere(casper);
 
-//openrice(casper);
+openrice(casper);
 
 ieatishootipost(casper);
 
